@@ -1,0 +1,19 @@
+{
+  "jdbc":{
+    "driverClass":"com.mysql.Driver",
+    "jdbcUrl":"jdbc:mysql://localhost/dbTest?useUnicode:true&characterEncoding:utf-8&serverTimezone:UTC",
+    "user":"duTest",
+    "password":"12345678"
+  },
+  "dataSourceClass":"com.mchange.v2.c3p0.ComboPooledDataSource",
+  "dataSourceConfig":{
+    "maxPoolSize":100,
+    "minPoolSize":2,
+    "initialPoolSize":2,
+    "acquireIncrement":2,
+    "maxStatements":1000,
+    "maxIdleTime":300,
+    "checkoutTimeout":5000
+  },
+  "showSql":true
+}
