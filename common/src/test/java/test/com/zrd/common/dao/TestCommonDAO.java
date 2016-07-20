@@ -94,7 +94,7 @@ public class TestCommonDAO {
     @org.junit.Test
     public void testSelectByPage() throws IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Test test = new Test();
-        test.setName("zrd");
+        test.setName("zr");
         List<Test> tests = dao.selectByPage(test, new LinkedHashMap<String, Order>(){{
             put("name", Order.ASC);
             put("id", Order.DESC);
@@ -107,7 +107,7 @@ public class TestCommonDAO {
     @org.junit.Test
     public void testCount() throws IllegalAccessException, SQLException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Test test = new Test();
-        test.setName("1zrd");
+        test.setName("zrda");
         System.out.println(dao.count(test));
     }
 }

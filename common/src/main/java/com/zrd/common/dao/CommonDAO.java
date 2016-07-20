@@ -282,7 +282,7 @@ public class CommonDAO <T extends CommonPo> {
      * @param orders
      * @return
      */
-    private String getOrderString(LinkedHashMap<String, Order> orders){
+    protected String getOrderString(LinkedHashMap<String, Order> orders){
         StringBuilder orderSqlSb = new StringBuilder();
         if(orders != null && orders.size() > 0){
             orderSqlSb.append(" ORDER BY ");
@@ -293,6 +293,30 @@ public class CommonDAO <T extends CommonPo> {
             orderSqlSb.append(StringUtils.join(orderList, ", "));
         }
         return orderSqlSb.toString();
+    }
+
+    /**
+     * 根据t设置模糊查询条件的
+     * @param t
+     * @param fieldNames 输出参数
+     * @param fieldValues 输出参数
+     * @throws IllegalAccessException
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws SQLException
+     */
+    protected void setWhereFieldsForFuzzy(T t, List<String> fieldNames, List<Object> fieldValues) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, SQLException {
+        Map<String, Object> objectMap = PropertyUtils.describe(t);
+        for(String key: t.getColoums().keySet()){
+            if(objectMap.get(key) != null){
+                fieldNames.add(key);
+                if(objectMap.get(key) instanceof String){
+                    fieldValues.add("%" + objectMap.get(key) + "%");
+                }else{
+                    fieldValues.add(objectMap.get(key));
+                }
+            }
+        }
     }
 
     /**
@@ -311,16 +335,10 @@ public class CommonDAO <T extends CommonPo> {
         if(t == null){
             throw new NullPointerException("条件参数t不能为null");
         }
-        Map<String, Object> objectMap = PropertyUtils.describe(t);
 
         List<String> fieldNames = new ArrayList<>();
         List<Object> fieldValues = new ArrayList<>();
-        for(String key: t.getColoums().keySet()){
-            if(objectMap.get(key) != null){
-                fieldNames.add(key);
-                fieldValues.add(objectMap.get(key));
-            }
-        }
+        this.setWhereFieldsForFuzzy(t, fieldNames, fieldValues);
 
         StringBuilder sqlSb = new StringBuilder();
         sqlSb.append("SELECT * FROM ");
@@ -354,19 +372,14 @@ public class CommonDAO <T extends CommonPo> {
 
         List<String> fieldNames = new ArrayList<>();
         List<Object> fieldValues = new ArrayList<>();
-        for(String key: t.getColoums().keySet()){
-            if(objectMap.get(key) != null){
-                fieldNames.add(key);
-                fieldValues.add(objectMap.get(key));
-            }
-        }
+        this.setWhereFieldsForFuzzy(t, fieldNames, fieldValues);
 
         StringBuilder sqlSb = new StringBuilder();
         sqlSb.append("SELECT COUNT(*) FROM ");
         sqlSb.append(t.getTableName());
         sqlSb.append(" WHERE ");
-        sqlSb.append(StringUtils.join(fieldNames, "=? AND "));
-        sqlSb.append("=? ");
+        sqlSb.append(StringUtils.join(fieldNames, "like ? AND "));
+        sqlSb.append(" LIKE ? ");
 
         return _queryRunner.query(DBManager.getConnection(), sqlSb.toString(), new ScalarHandler<Long>(), fieldValues.toArray());
     }
