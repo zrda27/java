@@ -18,10 +18,12 @@ sourceSets {
 }
 
 repositories {
-    maven{ url 'http://192.168.18.135:8081/nexus/content/groups/public/'}
+    //maven{ url 'http://192.168.18.135:8081/nexus/content/groups/public/'}
     mavenLocal()
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+
+    compile project(':common')
 }
